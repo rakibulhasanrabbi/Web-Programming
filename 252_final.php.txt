@@ -1,0 +1,67 @@
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "sundarban";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if($conn->connect_error){
+    die("Connection Failed $conn->connect_error");
+}
+
+
+$sql1 = "SELECT CATEGORYID, SUM(REVENUE)
+FROM SALES_DATA GROUP BY CATEGORYID;
+";
+
+$result1 = $conn->query($sql1);
+
+if($result1->num_rows >0)
+    {
+        while($row = $result1->fetch_assoc()){
+            echo print_r($row);
+            echo "<br>";
+        }
+    }
+else
+    {
+        echo "0 results";
+    }
+
+$sql4 = "SELECT CATEGORYID, AVG(REVENUE)
+AS AVG_REVENUE
+FROM sales_data
+GROUP BY CATEGORYID;";
+
+$result4 = $conn->query($sql4);
+
+if($result4->num_rows > 0){
+    while($row = $result4->fetch_assoc()){
+        $avg[$row['CATEGORYID']] = $row['AVG_REVENUE'];
+    }
+}
+
+$sql42 = "SELECT PRODUCTNAME, CATEGORYID, 
+CATEGORYNAME, REVENUE
+FROM SALES_DATA;
+";
+
+$result42 = $conn->query($sql42);
+
+if($result42->num_rows > 0){
+    while($row = $result42->fetch_assoc()){
+        if($row['REVENUE']>$avg[$row['CATEGORYID']])
+            echo "ProductName: $row[PRODUCTNAME] 
+        CategoryName: $row[CATEGORYNAME]
+        Label: Top Seller <br>";
+        else
+            echo "ProductName: $row[PRODUCTNAME] 
+        CategoryName: $row[CATEGORYNAME]
+        Label: Regular Seller <br>";
+    }
+}
+
+$conn->close();
+
+?>
